@@ -14,6 +14,8 @@
  */
 namespace zeptech\rest;
 
+use \ReflectionClass;
+
 /**
  * Base implementation of a RequestHandler.  Implements a handler for
  * all request actions for which returns a 404 response with an empty body.
@@ -50,7 +52,7 @@ abstract class BaseRequestHandler implements RequestHandler {
                              ->getDeclaringClass()
                              ->getName();
 
-      if ($declaringClass === $child->getName()) {
+      if ($declaringClass === $impl->getName()) {
         $allowed[] = strtoupper($method);
       }
     }

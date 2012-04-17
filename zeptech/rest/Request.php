@@ -24,6 +24,9 @@ class Request {
   /* Data sent with the request. */
   private $_data;
 
+  /* Values for any parameters specified in the mapping's URI template */
+  private $_parameters;
+
   /* Query parameters sent with the request. */
   private $_query;
 
@@ -34,6 +37,27 @@ class Request {
    */
   public function getData() {
     return $this->_data;
+  }
+
+  /**
+   * Getter for the parameter with the given name.
+   *
+   * @return mixed
+   */
+  public function getParameter($parameter) {
+    if (isset($this->_parameters[$parameter])) {
+      return $this->_parameters[$parameter];
+    }
+    return null;
+  }
+
+  /**
+   * Getter for the expanded values of the request's matching URI template.
+   *
+   * @return array
+   */
+  public function getParameters() {
+    return $this->_parameters;
   }
 
   /**
@@ -53,6 +77,16 @@ class Request {
    */
   public function setData(array $data = null) {
     $this->_data = $data;
+  }
+
+  /**
+   * Setter for any expanded values for the URI template that matches this
+   * request.
+   *
+   * @param array $parameters
+   */
+  public function setParameters(array $parameters = null) {
+    $this->_parameters = $parameters;
   }
 
   /**

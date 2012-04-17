@@ -63,14 +63,11 @@ class RestServer {
    * specific mappings need to be added first.
    *
    * @param string $uriTemplate URI template for URI to associate to the given
-   *   RequestHandler
+   *   RequestHandler.
    * @param RequestHandler $handler
    */
   public function addMapping($uriTemplate, RequestHandler $handler) {
-    $this->_mappings[] = array(
-      'template' => $uriTemplate,
-      'handler' => $handler
-    );
+    $this->_mappings[] = new UriMapping($uriTemplate, $handler);
   }
 
   /**
@@ -131,15 +128,13 @@ class RestServer {
    * @param string $uri
    */
   public function handleRequest($action, $uri) {
-    $debug = false;
-    if (substr($uri, -3) === '.js') {
-      $debug = true;
-    }
     $handler = null;
+    $parameters = null;
     foreach ($this->_mappings AS $mapping) {
-      $preg = '/^' . preg_quote($mapping['template'], '/') . '$/';
-      if (preg_match($preg, $uri)) {
-        $handler = $mapping['handler'];
+      $matches = $mapping->getTemplate()->match($uri);
+      if ($matches !== null) {
+        $handler = $mapping->getHandler();
+        $parameters = $matches;
         break;
       }
     }
@@ -151,6 +146,10 @@ class RestServer {
     }
 
     $this->_request = new Request();
+    if ($parameters !== null) {
+      $this->_request->setParameters($parameters);
+    }
+
     switch (strtoupper($action)) {
       case 'DELETE':
       $handler->delete($this->_request, $this->_response);
