@@ -33,7 +33,7 @@ class EncoderFactory {
    * @return ResponseEncoder
    */
   public static function getEncoder(AcceptType $type) {
-    $factory = self::_getInstance();
+    $factory = self::getInstance();
 
     $encoders = $factory->getEncoders();
     foreach ($encoders AS $encoder) {
@@ -44,8 +44,12 @@ class EncoderFactory {
     return null;
   }
 
-  /* Private instance method for the factory singleton. */
-  private static function _getInstance() {
+  /**
+   * Instance method for the factory singleton.
+   *
+   * @return EncoderFactory
+   */
+  public static function getInstance() {
     if (self::$_instance === null) {
       self::$_instance = new EncoderFactory();
     }
@@ -58,14 +62,34 @@ class EncoderFactory {
    * ===========================================================================
    */
 
+  private $_htmlEncoder;
+  private $_textEncoder;
+  private $_jsonEncoder;
+
   private $_encoders = array();
 
   protected function __construct() {
+    $this->_htmlEncoder = new HtmlEncoder();
+    $this->_textEncoder = new TextEncoder();
+    $this->_jsonEncoder = new JsonEncoder();
+
     $this->_encoders = array(
-      new HtmlEncoder(),
-      new TextEncoder(),
-      new JsonEncoder()
+      $this->_htmlEncoder,
+      $this->_textEncoder,
+      $this->_jsonEncoder
     );
+  }
+
+  public function getHtmlEncoder() {
+    return $this->_htmlEncoder;
+  }
+
+  public function getJsonEncoder() {
+    return $this->_jsonEncoder;
+  }
+
+  public function getTextEncoder() {
+    return $this->_textEncoder;
   }
 
   protected function getEncoders() {

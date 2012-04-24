@@ -50,7 +50,11 @@ class AcceptType {
    * @return string
    */
   public function __toString() {
-    return "$this->_type/$this->_subtype ($this->_q)";
+    $s = "$this->_type/$this->_subtype";
+    if ($this->_q !== 1) {
+      $s .= " ($this->_q)";
+    }
+    return $s;
   }
 
   /**

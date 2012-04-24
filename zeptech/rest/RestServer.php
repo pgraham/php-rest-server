@@ -84,9 +84,18 @@ class RestServer {
     // an appropriate encoder.
     $encoder = null;
     foreach ($this->_acceptTypes AS $acceptType) {
-      $encoder = EncoderFactory::getEncoder($acceptType);
-      if ($encoder !== null) {
-        break;
+      if ( ((string) $acceptType) === '*/*' ) {
+        // Attempt to determine an encoder based on the type of the response
+        if (is_object($this->_response) || is_array($this->_response)) {
+          $encoder = EncoderFactory::getInstance()->getJsonEncoder();
+        } else {
+          $encoder = EncoderFactory::getInstance()->getTextEncoder();
+        }
+      } else {
+        $encoder = EncoderFactory::getEncoder($acceptType);
+        if ($encoder !== null) {
+          break;
+        }
       }
     }
 
@@ -128,6 +137,8 @@ class RestServer {
    * @param string $uri
    */
   public function handleRequest($action, $uri) {
+    $uri = rtrim($uri, '/');
+
     $handler = null;
     $parameters = null;
     foreach ($this->_mappings AS $mapping) {
@@ -237,8 +248,7 @@ class RestServer {
   }
 
   /**
-   * Setter for any query parameters passed with the request.  Valid only for
-   * GET requests.
+   * Setter for any query parameters passed with the request.
    *
    * @param array $query
    */
