@@ -137,7 +137,9 @@ class RestServer {
    * @param string $uri
    */
   public function handleRequest($action, $uri) {
-    $uri = rtrim($uri, '/');
+    if ($uri !== '/') {
+      $uri = rtrim($uri, '/');
+    }
 
     $handler = null;
     $parameters = null;
@@ -156,7 +158,7 @@ class RestServer {
       return;
     }
 
-    $this->_request = new Request();
+    $this->_request = new Request($uri);
     if ($parameters !== null) {
       $this->_request->setParameters($parameters);
     }

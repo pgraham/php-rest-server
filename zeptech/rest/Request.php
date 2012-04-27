@@ -30,6 +30,13 @@ class Request {
   /* Query parameters sent with the request. */
   private $_query;
 
+  /* The requested URI */
+  private $_uri;
+
+  public function __construct($uri) {
+    $this->_uri = $uri;
+  }
+
   /**
    * Getter for the request data.
    *
@@ -67,6 +74,15 @@ class Request {
    */
   public function getQuery() {
     return $this->_query;
+  }
+
+  /**
+   * Getter for the request's URI.
+   *
+   * @return string
+   */
+  public function getUri() {
+    return $this->_uri;
   }
 
   /**
