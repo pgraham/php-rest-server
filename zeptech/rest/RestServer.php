@@ -14,6 +14,10 @@
  */
 namespace zeptech\rest;
 
+// TODO Allow an explicit response type be set in the response so that the
+//      dependency to oboe can be removed.
+use \oboe\Page;
+
 /**
  * This class encapsulates a the process of handling a RESTful request for a
  * resource.
@@ -86,8 +90,14 @@ class RestServer {
     foreach ($this->_acceptTypes AS $acceptType) {
       if ( ((string) $acceptType) === '*/*' ) {
         // Attempt to determine an encoder based on the type of the response
-        if (is_object($this->_response) || is_array($this->_response)) {
-          $encoder = EncoderFactory::getInstance()->getJsonEncoder();
+        $data = $this->_response->getData();
+
+        if (is_object($data) || is_array($data)) {
+          if ($data instanceof Page) {
+            $encoder = EncoderFactory::getInstance()->getHtmlEncoder();
+          } else {
+            $encoder = EncoderFactory::getInstance()->getJsonEncoder();
+          }
         } else {
           $encoder = EncoderFactory::getInstance()->getTextEncoder();
         }
