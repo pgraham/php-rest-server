@@ -33,21 +33,21 @@ class UriTemplate {
       return;
     }
 
-    if(preg_match_all('/\/\{(.+)\}(?:\/|$)/', $this->_tmpl, $matches)) {
+    if(preg_match_all('/\/\{([^}]+)\}/', $this->_tmpl, $matches)) {
       $this->_paramNames = $matches[1];
     }
 
-    $tmplCmps = explode('/', $this->_tmpl);
+    $tmplCmps = explode('/', ltrim($this->_tmpl, '/'));
     $escaped = array();
-    foreach ($tmplCmps AS $cmp) {
+    foreach ($tmplCmps as $cmp) {
       if (preg_match('/\{.+\}/', $cmp)) {
-        $escaped[] = '(.+)';
+        $escaped[] = '([^\/]+)';
       } else {
         $escaped[] = preg_quote($cmp);
       }
     }
 
-    $this->_matchRE = "/^" . implode('\/', $escaped) . "$/";
+    $this->_matchRE = "/^\/" . implode('\/', $escaped) . "$/";
   }
 
   public function match($uri) {

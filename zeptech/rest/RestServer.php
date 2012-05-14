@@ -84,27 +84,40 @@ class RestServer {
       return '';
     }
 
-    // For each of accepted types specified in the request, attempt to find
-    // an appropriate encoder.
-    $encoder = null;
-    foreach ($this->_acceptTypes AS $acceptType) {
-      if ( ((string) $acceptType) === '*/*' ) {
-        // Attempt to determine an encoder based on the type of the response
-        $data = $this->_response->getData();
+    if ($this->_response->getType() !== null) {
+      $type = $this->_response->getType();
+      switch ($type) {
+        case 'application/pdf':
+        $encoder = EncoderFactory::getInstance()->getBinaryEncoder();
+        break;
 
-        if (is_object($data) || is_array($data)) {
-          if ($data instanceof Page) {
-            $encoder = EncoderFactory::getInstance()->getHtmlEncoder();
+        default:
+        $encoder = EncoderFactory::getInstance()->getTextEncoder();
+        break;
+      }
+    } else {
+      // For each of accepted types specified in the request, attempt to find
+      // an appropriate encoder.
+      $encoder = null;
+      foreach ($this->_acceptTypes AS $acceptType) {
+        if ( ((string) $acceptType) === '*/*' ) {
+          // Attempt to determine an encoder based on the type of the response
+          $data = $this->_response->getData();
+
+          if (is_object($data) || is_array($data)) {
+            if ($data instanceof Page) {
+              $encoder = EncoderFactory::getInstance()->getHtmlEncoder();
+            } else {
+              $encoder = EncoderFactory::getInstance()->getJsonEncoder();
+            }
           } else {
-            $encoder = EncoderFactory::getInstance()->getJsonEncoder();
+            $encoder = EncoderFactory::getInstance()->getTextEncoder();
           }
         } else {
-          $encoder = EncoderFactory::getInstance()->getTextEncoder();
-        }
-      } else {
-        $encoder = EncoderFactory::getEncoder($acceptType);
-        if ($encoder !== null) {
-          break;
+          $encoder = EncoderFactory::getEncoder($acceptType);
+          if ($encoder !== null) {
+            break;
+          }
         }
       }
     }
@@ -173,25 +186,34 @@ class RestServer {
       $this->_request->setParameters($parameters);
     }
 
-    switch (strtoupper($action)) {
-      case 'DELETE':
-      $handler->delete($this->_request, $this->_response);
-      break;
+    try {
+      switch (strtoupper($action)) {
+        case 'DELETE':
+        $handler->delete($this->_request, $this->_response);
+        break;
 
-      case 'GET':
-      $this->_request->setQuery($this->_query);
-      $handler->get($this->_request, $this->_response);
-      break;
+        case 'GET':
+        $this->_request->setQuery($this->_query);
+        $handler->get($this->_request, $this->_response);
+        break;
 
-      case 'POST':
-      $this->_request->setData($this->_data);
-      $handler->post($this->_request, $this->_response);
-      break;
+        case 'POST':
+        $this->_request->setData($this->_data);
+        $handler->post($this->_request, $this->_response);
+        break;
 
-      case 'PUT':
-      $this->_request->setData($this->_data);
-      $handler->put($this->_request, $this->_response);
-      break;
+        case 'PUT':
+        $this->_request->setData($this->_data);
+        $handler->put($this->_request, $this->_response);
+        break;
+      }
+    } catch (RestException $e) {
+      $hdr = "HTTP/1.1 {$e->getCode()} {$e->getHeaderMessage()}";
+      $this->_response->header($hdr);
+      foreach ($e->getHeaders() as $hdr) {
+        $this->_response->header($hdr);
+      }
+      $this->_response->setData($e->getMessage());
     }
   }
 

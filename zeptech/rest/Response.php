@@ -17,6 +17,8 @@ namespace zeptech\rest;
 /**
  * This class encapsulates data about a response to a resource request.
  *
+ * TODO Separate specification of status header from other headers.
+ *
  * @author Philip Graham <philip@zeptech.ca>
  */
 class Response {
@@ -26,6 +28,9 @@ class Response {
 
   /* Headers to send with the response. */
   private $_headers = array();
+
+  /* The type of content in the response */
+  private $_type;
 
   /**
    * Getter for the response's raw unencoded data.
@@ -46,11 +51,23 @@ class Response {
   }
 
   /**
+   * Getter for the type of data contained in the response.
+   *
+   * @return string
+   */
+  public function getType() {
+    return $this->_type;
+  }
+
+  /**
    * Add a header to send with the response.
    *
    * @param string $header
    */
   public function header($header) {
+    if (preg_match('/Content-Type\: (.+)/i', $header, $matches)) {
+      $this->setType($matches[1]);
+    }
     $this->_headers[] = $header;
   }
 
@@ -61,6 +78,15 @@ class Response {
    */
   public function setData($data = null) {
     $this->_data = $data;
+  }
+
+  /**
+   * Setter for the type of content in the response.
+   *
+   * @param string $type
+   */
+  public function setType($type) {
+    $this->_type = $type;
   }
 
 }

@@ -62,22 +62,29 @@ class EncoderFactory {
    * ===========================================================================
    */
 
+  private $_binaryEncoder;
   private $_htmlEncoder;
-  private $_textEncoder;
   private $_jsonEncoder;
+  private $_textEncoder;
 
   private $_encoders = array();
 
   protected function __construct() {
+    $this->_binaryEncoder = new BinaryEncoder();
     $this->_htmlEncoder = new HtmlEncoder();
-    $this->_textEncoder = new TextEncoder();
     $this->_jsonEncoder = new JsonEncoder();
+    $this->_textEncoder = new TextEncoder();
 
     $this->_encoders = array(
+      $this->_binaryEncoder,
       $this->_htmlEncoder,
-      $this->_textEncoder,
-      $this->_jsonEncoder
+      $this->_jsonEncoder,
+      $this->_textEncoder
     );
+  }
+
+  public function getBinaryEncoder() {
+    return $this->_binaryEncoder;
   }
 
   public function getHtmlEncoder() {
