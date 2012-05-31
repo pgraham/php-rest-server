@@ -33,22 +33,9 @@ class RestServer {
   private $_acceptTypes = array('application/json');
 
   /*
-   * Any data send with the request.  This will only be passed to a handler when
-   * processing a POST or PUT request.
-   */
-  private $_data;
-
-  /*
    * Map of URI's and their handlers that are recognized by this server.
    */
   private $_mappings = array();
-
-  /*
-   * Any query parameters passed with the request.  These will only be passed
-   * to a handler when processing a GET request.
-   */
-  private $_query;
-
 
   /*
    * Object which encapsulates the request being handled by the server.
@@ -193,17 +180,17 @@ class RestServer {
         break;
 
         case 'GET':
-        $this->_request->setQuery($this->_query);
+        $this->_request->setQuery($this->_parseGet());
         $handler->get($this->_request, $this->_response);
         break;
 
         case 'POST':
-        $this->_request->setData($this->_data);
+        $this->_request->setData($this->_parsePost());
         $handler->post($this->_request, $this->_response);
         break;
 
         case 'PUT':
-        $this->_request->setData($this->_data);
+        $this->_request->setData($this->_parsePut());
         $handler->put($this->_request, $this->_response);
         break;
       }
@@ -271,23 +258,31 @@ class RestServer {
     }
   }
 
-  /**
-   * Setter for any data passed with the request.  Valid only for POST and PUT
-   * requests.
-   *
-   * @param array $data
-   */
-  public function setData(array $data) {
-    $this->_data = $data;
+  private function _parseGet() {
+    return $_GET;
   }
 
-  /**
-   * Setter for any query parameters passed with the request.
-   *
-   * @param array $query
-   */
-  public function setQuery(array $query) {
-    $this->_query = $query;
+  private function _parsePost() {
+    if (!empty($_POST)) {
+      return $_POST;
+    }
+
+    global $HTTP_RAW_POST_DATA;
+    if (!empty($HTTP_RAW_POST_DATA)) {
+      if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+        return (array) json_decode($HTTP_RAW_POST_DATA);
+      } else {
+        return $HTTP_RAW_POST_DATA;
+      }
+    }
+
+    $postData = file_get_contents('php://input', 'r');
+    return $postData;
+  }
+
+  private function _parsePut() {
+    $putData = file_get_contents('php://input', 'r');
+    return $putData;
   }
 
 }
