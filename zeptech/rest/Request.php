@@ -91,7 +91,7 @@ class Request {
    *
    * @param array $data
    */
-  public function setData(array $data = null) {
+  public function setData($data) {
     $this->_data = $data;
   }
 
