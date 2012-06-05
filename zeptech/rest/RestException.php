@@ -25,7 +25,7 @@ class RestException extends Exception {
 
   private static $_msgs = array(
     404 => 'The requested resource could not be found.',
-    405 => 'The requested resource cannot be accessed in the attempted manner.'
+    405 => 'Cannot perform the requested action on the specified resource.'
   );
 
   private static $_hdrMsgs = array(
