@@ -24,11 +24,13 @@ use \Exception;
 class RestException extends Exception {
 
   private static $_msgs = array(
+    401 => 'You are not authorized to perform the request action',
     404 => 'The requested resource could not be found.',
     405 => 'Cannot perform the requested action on the specified resource.'
   );
 
   private static $_hdrMsgs = array(
+    401 => 'Unauthorized',
     404 => 'Not Found',
     405 => 'Method Not Allowed'
   );
@@ -36,9 +38,13 @@ class RestException extends Exception {
   private $_hdrMsg;
   private $_hdrs = array();
 
-  public function __construct($code) {
+  public function __construct($code, array $hdrs = null) {
     parent::__construct(self::$_msgs[$code], $code);
     $this->_hdrMsg = self::$_hdrMsgs[$code];
+
+    if ($hdrs) {
+      $this->_hdrs = $hdrs;
+    }
   }
 
   public function getHeaderMessage() {
