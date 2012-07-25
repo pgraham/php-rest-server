@@ -24,12 +24,14 @@ use \Exception;
 class RestException extends Exception {
 
   private static $_msgs = array(
-    401 => 'You are not authorized to perform the request action',
+    400 => 'The request could not be understood by the server due to malformed syntax.',
+    401 => 'You are not authorized to perform the request action.',
     404 => 'The requested resource could not be found.',
     405 => 'Cannot perform the requested action on the specified resource.'
   );
 
   private static $_hdrMsgs = array(
+    400 => 'Bad Request',
     401 => 'Unauthorized',
     404 => 'Not Found',
     405 => 'Method Not Allowed'
