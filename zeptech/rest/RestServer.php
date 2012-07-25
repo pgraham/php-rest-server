@@ -56,9 +56,12 @@ class RestServer {
    * @param string $uriTemplate URI template for URI to associate to the given
    *   RequestHandler.
    * @param RequestHandler $handler
+   * @param string $id Optional id for the mapping.  This allows a handler for
+   *   more than one URI template to quickly determine the type of request
    */
-  public function addMapping($uriTemplate, RequestHandler $handler) {
-    $this->_mappings[] = new UriMapping($uriTemplate, $handler);
+  public function addMapping($uriTemplate, RequestHandler $handler, $id = null)
+  {
+    $this->_mappings[] = new UriMapping($uriTemplate, $handler, $id);
   }
 
   /**
@@ -153,11 +156,13 @@ class RestServer {
 
     $handler = null;
     $parameters = null;
+    $mappingId = null;
     foreach ($this->_mappings AS $mapping) {
       $matches = $mapping->getTemplate()->match($uri);
       if ($matches !== null) {
         $handler = $mapping->getHandler();
         $parameters = $matches;
+        $mappingId = $mapping->getId();
         break;
       }
     }
@@ -168,7 +173,7 @@ class RestServer {
       return;
     }
 
-    $this->_request = new Request($uri);
+    $this->_request = new Request($uri, $mappingId);
     if ($parameters !== null) {
       $this->_request->setParameters($parameters);
     }

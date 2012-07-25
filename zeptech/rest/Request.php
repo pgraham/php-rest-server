@@ -24,6 +24,9 @@ class Request {
   /* Data sent with the request. */
   private $_data;
 
+  /* The id of the mapping that handles this request. */
+  private $_mappingId;
+
   /* Values for any parameters specified in the mapping's URI template */
   private $_parameters;
 
@@ -33,8 +36,9 @@ class Request {
   /* The requested URI */
   private $_uri;
 
-  public function __construct($uri) {
+  public function __construct($uri, $mappingId = null) {
     $this->_uri = $uri;
+    $this->_mappingId = $mappingId;
   }
 
   /**
@@ -44,6 +48,15 @@ class Request {
    */
   public function getData() {
     return $this->_data;
+  }
+
+  /**
+   * Getter for the mapping that is handling the request.
+   *
+   * @return string
+   */
+  public function getMappingId() {
+    return $this->_mappingId;
   }
 
   /**

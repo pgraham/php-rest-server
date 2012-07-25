@@ -23,16 +23,22 @@ namespace zeptech\rest;
  */
 class UriMapping {
 
-  private $_template;
   private $_handler;
+  private $_id;
+  private $_template;
 
-  public function __construct($uriTemplate, $handler) {
+  public function __construct($uriTemplate, $handler, $id = null) {
     $this->_template = new UriTemplate($uriTemplate);
     $this->_handler = $handler;
+    $this->_id = $id;
   }
 
   public function getHandler() {
     return $this->_handler;
+  }
+
+  public function getId() {
+    return $this->_id;
   }
 
   public function getTemplate() {
