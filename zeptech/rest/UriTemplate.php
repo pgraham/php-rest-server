@@ -50,8 +50,7 @@ class UriTemplate {
     $this->_matchRE = "/^\/" . implode('\/', $escaped) . "$/";
   }
 
-  public function match($uri) {
-    $params = null;
+  public function matches($uri, &$params) {
     if (preg_match($this->_matchRE, $uri, $matches)) {
       array_shift($matches);
 
@@ -59,7 +58,8 @@ class UriTemplate {
       foreach ($this->_paramNames AS $idx => $param) {
         $params[$param] = $matches[$idx];
       }
+      return true;
     }
-    return $params;
+    return false;
   }
 }

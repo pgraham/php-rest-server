@@ -158,8 +158,8 @@ class RestServer {
     $parameters = null;
     $mappingId = null;
     foreach ($this->_mappings AS $mapping) {
-      $matches = $mapping->getTemplate()->match($uri);
-      if ($matches !== null) {
+      $matches = null;
+      if ($mapping->getTemplate()->matches($uri, $matches)) {
         $handler = $mapping->getHandler();
         $parameters = $matches;
         $mappingId = $mapping->getId();
