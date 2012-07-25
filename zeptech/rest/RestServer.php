@@ -263,6 +263,13 @@ class RestServer {
     }
   }
 
+  private function _decodeData($data) {
+    if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+      return json_decode($data);
+    }
+    return $data;
+  }
+
   private function _parseGet() {
     return $_GET;
   }
@@ -274,20 +281,17 @@ class RestServer {
 
     global $HTTP_RAW_POST_DATA;
     if (!empty($HTTP_RAW_POST_DATA)) {
-      if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
-        return (array) json_decode($HTTP_RAW_POST_DATA);
-      } else {
-        return $HTTP_RAW_POST_DATA;
-      }
+      $postData = $HTTP_RAW_POST_DATA;
+    } else {
+      $postData = file_get_contents('php://input', 'r');
     }
 
-    $postData = file_get_contents('php://input', 'r');
-    return $postData;
+    return $this->_decodeData($postData);
   }
 
   private function _parsePut() {
     $putData = file_get_contents('php://input', 'r');
-    return $putData;
+    return $this->_decodeData($putData);
   }
 
 }
