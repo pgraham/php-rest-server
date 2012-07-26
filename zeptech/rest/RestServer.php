@@ -264,9 +264,18 @@ class RestServer {
   }
 
   private function _decodeData($data) {
-    if (strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+    // If Content-Type is not specified by the client then no decoding is
+    // possible
+    if (!isset($_SERVER['CONTENT_TYPE'])) {
+      return $data;
+    }
+
+    $contentType = $_SERVER['CONTENT_TYPE'];
+    if (strpos($contentType, 'application/json') !== false) {
       return json_decode($data);
     }
+
+    // Content-Type is not supported for automatic decoding, return the raw data
     return $data;
   }
 
