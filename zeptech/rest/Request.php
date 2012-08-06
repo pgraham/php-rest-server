@@ -46,7 +46,10 @@ class Request {
    *
    * @return array
    */
-  public function getData() {
+  public function getData($key = null) {
+    if ($key !== null && is_array($this->_data)) {
+      return $this->_data[$key];
+    }
     return $this->_data;
   }
 
@@ -87,6 +90,19 @@ class Request {
    */
   public function getQuery() {
     return $this->_query;
+  }
+
+  /**
+   * Getter for the request's query parameter with the given name.
+   *
+   * @param string $name The name of the query parameter to fetch.
+   * @return string
+   */
+  public function getQueryParameter($key) {
+    if (isset($this->_query[$key])) {
+      return $this->_query[$key];
+    }
+    return null;
   }
 
   /**
