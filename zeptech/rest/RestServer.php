@@ -59,9 +59,10 @@ class RestServer {
    * @param string $id Optional id for the mapping.  This allows a handler for
    *   more than one URI template to quickly determine the type of request
    */
-  public function addMapping($uriTemplate, RequestHandler $handler, $id = null)
+  public function addMapping($uriTemplate, RequestHandler $handler, $id = null,
+      $method = null)
   {
-    $this->_mappings[] = new UriMapping($uriTemplate, $handler, $id);
+    $this->_mappings[] = new UriMapping($uriTemplate, $handler, $id, $method);
   }
 
   /**
@@ -154,16 +155,21 @@ class RestServer {
       $uri = rtrim($uri, '/');
     }
 
+    $action = strtoupper($action);
+
     $handler = null;
     $parameters = null;
     $mappingId = null;
     foreach ($this->_mappings AS $mapping) {
       $matches = null;
       if ($mapping->getTemplate()->matches($uri, $matches)) {
-        $handler = $mapping->getHandler();
-        $parameters = $matches;
-        $mappingId = $mapping->getId();
-        break;
+        $mappingMethod = $mapping->getMethod();
+        if ($mappingMethod === null || $mappingMethod === $action) {
+          $handler = $mapping->getHandler();
+          $parameters = $matches;
+          $mappingId = $mapping->getId();
+          break;
+        }
       }
     }
 
@@ -179,7 +185,7 @@ class RestServer {
     }
 
     try {
-      switch (strtoupper($action)) {
+      switch ($action) {
         case 'DELETE':
         $handler->delete($this->_request, $this->_response);
         break;

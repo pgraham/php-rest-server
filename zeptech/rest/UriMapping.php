@@ -25,11 +25,15 @@ class UriMapping {
 
   private $_handler;
   private $_id;
+  private $_method;
   private $_template;
 
-  public function __construct($uriTemplate, $handler, $id = null) {
+  public function __construct($uriTemplate, $handler, $id = null,
+      $method = null)
+  {
     $this->_template = new UriTemplate($uriTemplate);
     $this->_handler = $handler;
+    $this->_method = $method !== null ? strtoupper($method) : null;
     $this->_id = $id;
   }
 
@@ -39,6 +43,10 @@ class UriMapping {
 
   public function getId() {
     return $this->_id;
+  }
+
+  public function getMethod() {
+    return $this->_method;
   }
 
   public function getTemplate() {
