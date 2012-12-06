@@ -19,7 +19,7 @@ namespace zeptech\rest;
 use \oboe\Page;
 
 /**
- * This class encapsulates a the process of handling a RESTful request for a
+ * This class encapsulates the process of handling a RESTful request for a
  * resource.
  *
  * @author Philip Graham <philip@zeptech.ca>
