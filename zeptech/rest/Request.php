@@ -21,6 +21,9 @@ namespace zeptech\rest;
  */
 class Request {
 
+  /* The HTTP method of the request. */
+  private $action;
+
   /* Data sent with the request. */
   private $_data;
 
@@ -39,6 +42,15 @@ class Request {
   public function __construct($uri, $mappingId = null) {
     $this->_uri = $uri;
     $this->_mappingId = $mappingId;
+  }
+
+  /**
+   * Getter for the request's HTTP method.
+   *
+   * @return string
+   */
+  public function getAction() {
+    return $this->action;
   }
 
   /**
@@ -112,6 +124,15 @@ class Request {
    */
   public function getUri() {
     return $this->_uri;
+  }
+
+  /**
+   * Setter for the request's HTTP method.
+   *
+   * @param string $action
+   */
+  public function setAction($action) {
+    $this->action = $action;
   }
 
   /**

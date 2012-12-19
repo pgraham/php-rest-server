@@ -180,6 +180,7 @@ class RestServer {
     }
 
     $this->_request = new Request($uri, $mappingId);
+    $this->_request->setAction($action);
     if ($parameters !== null) {
       $this->_request->setParameters($parameters);
     }
