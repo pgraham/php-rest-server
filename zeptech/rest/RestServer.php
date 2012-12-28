@@ -17,6 +17,7 @@ namespace zeptech\rest;
 // TODO Allow an explicit response type be set in the response so that the
 //      dependency to oboe can be removed.
 use \oboe\Page;
+use \Exception;
 
 /**
  * This class encapsulates the process of handling a RESTful request for a
@@ -31,6 +32,12 @@ class RestServer {
    * requesting agent.
    */
   private $_acceptTypes = array('application/json');
+
+  /* Default exception handler. */
+  private $defaultExceptionHandler;
+
+  /* Registered exception handlers.  */
+  private $exceptionHandlers = array();
 
   /*
    * Map of URI's and their handlers that are recognized by this server.
@@ -48,6 +55,10 @@ class RestServer {
    * This will not be populated until {@link #handleRequest()} is called.
    */
   private $_response;
+
+  public function __construct() {
+    $this->defaultExceptionHandler = new DefaultExceptionHandler();
+  }
 
   /**
    * Add a resource mapping for a resource URI handled by this server.  More
@@ -151,41 +162,40 @@ class RestServer {
    * @param string $uri
    */
   public function handleRequest($action, $uri) {
-    if ($uri !== '/') {
-      $uri = rtrim($uri, '/');
-    }
+    try {
+      if ($uri !== '/') {
+        $uri = rtrim($uri, '/');
+      }
 
-    $action = strtoupper($action);
+      $action = strtoupper($action);
 
-    $handler = null;
-    $parameters = null;
-    $mappingId = null;
-    foreach ($this->_mappings AS $mapping) {
-      $matches = null;
-      if ($mapping->getTemplate()->matches($uri, $matches)) {
-        $mappingMethod = $mapping->getMethod();
-        if ($mappingMethod === null || $mappingMethod === $action) {
-          $handler = $mapping->getHandler();
-          $parameters = $matches;
-          $mappingId = $mapping->getId();
-          break;
+      $handler = null;
+      $parameters = null;
+      $mappingId = null;
+      foreach ($this->_mappings AS $mapping) {
+        $matches = null;
+        if ($mapping->getTemplate()->matches($uri, $matches)) {
+          $mappingMethod = $mapping->getMethod();
+          if ($mappingMethod === null || $mappingMethod === $action) {
+            $handler = $mapping->getHandler();
+            $parameters = $matches;
+            $mappingId = $mapping->getId();
+            break;
+          }
         }
       }
-    }
 
-    $this->_response = new Response();
-    if ($handler === null) {
-      $this->_response->header('HTTP/1.1 404 Not Found');
-      return;
-    }
+      $this->_response = new Response();
+      if ($handler === null) {
+        throw new RestException(404);
+      }
 
-    $this->_request = new Request($uri, $mappingId);
-    $this->_request->setAction($action);
-    if ($parameters !== null) {
-      $this->_request->setParameters($parameters);
-    }
+      $this->_request = new Request($uri, $mappingId);
+      $this->_request->setAction($action);
+      if ($parameters !== null) {
+        $this->_request->setParameters($parameters);
+      }
 
-    try {
       switch ($action) {
         case 'DELETE':
         $handler->delete($this->_request, $this->_response);
@@ -207,13 +217,37 @@ class RestServer {
         break;
       }
     } catch (RestException $e) {
+      $this->_response->clearHeaders();
+
       $hdr = "HTTP/1.1 {$e->getCode()} {$e->getHeaderMessage()}";
       $this->_response->header($hdr);
       foreach ($e->getHeaders() as $hdr) {
         $this->_response->header($hdr);
       }
       $this->_response->setData($e->getMessage());
+
+    } catch (Exception $e) {
+      // TODO $this->logger->log($e);
+
+      $type = get_class($e);
+      if (array_key_exists($type, $this->exceptionHandlers)) {
+        $handler = $this->exceptionHandlers[$type];
+      } else {
+        $handler = $this->defaultExceptionHandler;
+      }
+
+      $handler->handleException($e, $this->_request, $this->_response);
     }
+  }
+
+  /**
+   * Register an exception handler for the specified type of exception.
+   *
+   * @param string $type
+   * @param ExceptionHandler $handler
+   */
+  public function registerExceptionHandler($type, ExceptionHandler $handler) {
+    $this->exceptionHandlers[$type] = $handler;
   }
 
   /**

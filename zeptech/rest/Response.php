@@ -27,10 +27,24 @@ class Response {
   private $_data;
 
   /* Headers to send with the response. */
-  private $_headers = array();
+  private $_headers;
 
   /* The type of content in the response */
   private $_type;
+
+  /**
+   * Initialize a new Response object.
+   */
+  public function __construct() {
+    $this->clearHeaders();
+  }
+
+  /**
+   * Clear all response headers.
+   */
+  public function clearHeaders() {
+    $this->_headers = array();
+  }
 
   /**
    * Getter for the response's raw unencoded data.
