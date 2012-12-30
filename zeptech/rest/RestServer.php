@@ -14,6 +14,8 @@
  */
 namespace zeptech\rest;
 
+use \Psr\Log\LoggerInterface;
+use \Psr\Log\LoggerAwareInterface;
 // TODO Allow an explicit response type be set in the response so that the
 //      dependency to oboe can be removed.
 use \oboe\Page;
@@ -25,7 +27,7 @@ use \Exception;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class RestServer {
+class RestServer /* implements LoggerAwareInterface */ {
 
   /*
    * The declared formats for the response which will be recognized by the
@@ -38,6 +40,9 @@ class RestServer {
 
   /* Registered exception handlers.  */
   private $exceptionHandlers = array();
+
+  /* PSR-3 Logger implementation */
+  private $logger;
 
   /*
    * Map of URI's and their handlers that are recognized by this server.
@@ -227,7 +232,12 @@ class RestServer {
       $this->_response->setData($e->getMessage());
 
     } catch (Exception $e) {
-      // TODO $this->logger->log($e);
+      if ($this->logger !== null) {
+        $this->logger->err("Exception handling request.", array(
+          'request' => $this->_request,
+          'exception' => $e
+        ));
+      }
 
       $type = get_class($e);
       if (array_key_exists($type, $this->exceptionHandlers)) {
@@ -302,6 +312,13 @@ class RestServer {
       });
 
     }
+  }
+
+  /**
+   * {@inheritDocs}
+   */
+  public function setLogger(/*LoggerInterface*/ $logger) {
+    $this->logger = $logger;
   }
 
   private function _decodeData($data) {
