@@ -238,6 +238,8 @@ class RestServer /* implements LoggerAwareInterface */ {
           'exception' => $e
         ));
       }
+      error_log($e->getMessage());
+      error_log($e->getTraceAsString());
 
       $type = get_class($e);
       if (array_key_exists($type, $this->exceptionHandlers)) {
