@@ -14,6 +14,8 @@
  */
 namespace zeptech\rest;
 
+use \StdClass;
+
 /**
  * This class encapsulates data about a resource request.
  *
@@ -59,8 +61,14 @@ class Request {
    * @return array
    */
   public function getData($key = null) {
-    if ($key !== null && is_array($this->_data)) {
-      return $this->_data[$key];
+    if ($key !== null) {
+      if ($this->_data instanceof StdClass) {
+        return $this->_data->$key;
+      } else if (is_array($this->_data)) {
+        return $this->_data[$key];
+      } else {
+        return null;
+      }
     }
     return $this->_data;
   }
@@ -124,6 +132,23 @@ class Request {
    */
   public function getUri() {
     return $this->_uri;
+  }
+
+  /**
+   * Indicate whether or not the specified data value is present in the
+   * request.
+   *
+   * @param string $key
+   * @return boolean
+   */
+  public function hasData($key) {
+    if ($this->_data instanceof StdClass) {
+      return isset($this->_data->$key);
+    } else if (is_array($this->_data)) {
+      return isset($this->_data[$key]);
+    } else {
+      return false;
+    }
   }
 
   /**
