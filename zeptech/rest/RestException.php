@@ -26,7 +26,7 @@ class RestException extends Exception {
   public static $MESSAGES = array(
     400 => 'The request could not be understood by the server due to malformed syntax.',
     401 => 'You are not authorized to perform the request action.',
-    403 => 'The attempt action is forbidden and should not be retried. Authentication will not help.'
+    403 => 'The attempt action is forbidden and should not be retried. Authentication will not help.',
     404 => 'The requested resource could not be found.',
     405 => 'Cannot perform the requested action on the specified resource.',
     500 => 'The server encountered an unexpected condition which prevented it from fulfilling the request.'
