@@ -21,48 +21,53 @@ use \Exception;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class RestException extends Exception {
+class RestException extends Exception
+{
 
-  public static $MESSAGES = array(
-    400 => 'The request could not be understood by the server due to malformed syntax.',
-    401 => 'You are not authorized to perform the request action.',
-    403 => 'The attempted action is forbidden and should not be retried. Authentication will not help.',
-    404 => 'The requested resource could not be found.',
-    405 => 'Cannot perform the requested action on the specified resource.',
-    500 => 'The server encountered an unexpected condition which prevented it from fulfilling the request.'
-  );
+    public static $MESSAGES = array(
+        400 => 'The request could not be understood by the server due to malformed syntax.',
+        401 => 'You are not authorized to perform the request action.',
+        403 => 'The attempted action is forbidden and should not be retried. Authentication will not help.',
+        404 => 'The requested resource could not be found.',
+        405 => 'Cannot perform the requested action on the specified resource.',
+        500 => 'The server encountered an unexpected condition which prevented it from fulfilling the request.'
+    );
 
-  public static $HEADER_MESSAGES = array(
-    400 => 'Bad Request',
-    401 => 'Unauthorized',
-    403 => 'Forbidden',
-    404 => 'Not Found',
-    405 => 'Method Not Allowed',
-    500 => 'Internal Server Error'
-  );
+    public static $HEADER_MESSAGES = array(
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        500 => 'Internal Server Error'
+    );
 
-  private $_hdrMsg;
-  private $_hdrs = array();
+    private $hdrMsg;
+    private $hdrs = array();
 
-  public function __construct($code, array $hdrs = null) {
-    parent::__construct(self::$MESSAGES[$code], $code);
-    $this->_hdrMsg = self::$HEADER_MESSAGES[$code];
+    public function __construct($code, array $hdrs = null)
+    {
+        parent::__construct(self::$MESSAGES[$code], $code);
+        $this->hdrMsg = self::$HEADER_MESSAGES[$code];
 
-    if ($hdrs) {
-      $this->_hdrs = $hdrs;
+        if ($hdrs) {
+            $this->hdrs = $hdrs;
+        }
     }
-  }
 
-  public function getHeaderMessage() {
-    return $this->_hdrMsg;
-  }
+    public function getHeaderMessage()
+    {
+        return $this->hdrMsg;
+    }
 
-  public function getHeaders() {
-    return $this->_hdrs;
-  }
+    public function getHeaders()
+    {
+        return $this->hdrs;
+    }
 
-  public function header($hdr) {
-    $this->_hdrs[] = $hdr;
-  }
+    public function header($hdr)
+    {
+        $this->hdrs[] = $hdr;
+    }
 
 }
