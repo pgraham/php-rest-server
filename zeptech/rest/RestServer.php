@@ -65,6 +65,10 @@ class RestServer /* implements LoggerAwareInterface */
     public function __construct()
     {
         $this->defaultExceptionHandler = new DefaultExceptionHandler();
+        $this->registerExceptionHandler(
+            'zeptech\rest\RestException',
+            new RestExceptionHandler()
+        );
     }
 
     /**
@@ -236,15 +240,6 @@ class RestServer /* implements LoggerAwareInterface */
                     $handler->put($this->request, $this->response);
                     break;
             }
-        } catch (RestException $e) {
-            $this->response->clearHeaders();
-
-            $hdr = "HTTP/1.1 {$e->getCode()} {$e->getHeaderMessage()}";
-            $this->response->header($hdr);
-            foreach ($e->getHeaders() as $hdr) {
-                $this->response->header($hdr);
-            }
-            $this->response->setData($e->getMessage());
 
         } catch (Exception $e) {
               if ($this->logger !== null) {
