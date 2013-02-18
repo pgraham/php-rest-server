@@ -258,6 +258,9 @@ class RestServer /* implements LoggerAwareInterface */
                 $handler = $this->defaultExceptionHandler;
               }
 
+              if (!$this->request) {
+                $this->request = new Request($uri);
+              }
               $handler->handleException($e, $this->request, $this->response);
         }
     }
