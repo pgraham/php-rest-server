@@ -96,6 +96,19 @@ class RestServer /* implements LoggerAwareInterface */
     }
 
     /**
+     * Retrieve the handler for the specified type of exception.
+     *
+     * @param string $type
+     */
+    public function getExceptionHandler($type)
+    {
+        if (isset($this->exceptionHandlers[$type])) {
+          return $this->exceptionHandlers[$type];
+        }
+        return null;
+    }
+
+    /**
      * Getter for the body text of the response.
      *
      * @return string
