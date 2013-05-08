@@ -14,9 +14,6 @@
  */
 namespace zpt\rest;
 
-use \zeptech\rest\ExceptionHandler;
-use \zeptech\rest\Request;
-use \zeptech\rest\Response;
 use \Exception;
 
 /**

@@ -66,7 +66,7 @@ class RestServer /* implements LoggerAwareInterface */
     {
         $this->defaultExceptionHandler = new DefaultExceptionHandler();
         $this->registerExceptionHandler(
-            'zeptech\rest\RestException',
+            'zpt\rest\RestException',
             new RestExceptionHandler()
         );
     }
