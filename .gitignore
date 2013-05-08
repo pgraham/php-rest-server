@@ -1,2 +1,5 @@
 phpdoc.ini
 commit.txt
+
+# Vim files
+*.un~
