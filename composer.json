@@ -1,0 +1,22 @@
+{
+    "name": "zeptech/php-rest-server",
+    "type": "library",
+    "description": "RESTful server for PHP featuring content negotiation",
+    "keywords": [ "rest" ],
+    "homepage": "https://github.com/pgraham/php-rest-server",
+    "license": "BSD",
+    "authors": [
+	{
+	    "name": "Philip Graham",
+	    "email": "philip@zeptech.ca"
+	}
+    ],
+    "autoload": {
+	"psr-0": {
+	    "zpt\\rest": ""
+	}
+    },
+    "require": {
+	"php": ">=5.3.0"
+    }
+}

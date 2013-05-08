@@ -3,3 +3,7 @@ commit.txt
 
 # Vim files
 *.un~
+
+# Composer
+vendor/
+composer.lock
