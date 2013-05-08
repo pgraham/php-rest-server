@@ -12,23 +12,22 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zeptech\rest;
+namespace zpt\rest;
 
 /**
- * This class encapsulates a response encoder for binary data.
- *
- * NOTE: Unlike other encoders, this encoder will not set a Content-Type header.
+ * This class encapsulates a response encoder for text/html media types.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class BinaryEncoder implements ResponseEncoder {
+class HtmlEncoder implements ResponseEncoder {
 
   public function supports(AcceptType $type) {
-    return $type->matches('application/pdf');
+    return $type->matches('text/html');
   }
 
   public function encode(Response $response) {
-    return $response->getData();
+    $response->header('Content-Type: text/html');
+    return (string) $response->getData();
   }
 
 }

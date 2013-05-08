@@ -12,22 +12,22 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zeptech\rest;
+namespace zpt\rest;
 
 /**
- * This class encapsulates a response encoder for text/* media types.
+ * This class encapsulates a response encoder for application/json media types.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class TextEncoder implements ResponseEncoder {
+class JsonEncoder implements ResponseEncoder {
 
   public function supports(AcceptType $type) {
-    return $type->matches('text/*');
+    return $type->matches('application/json');
   }
 
   public function encode(Response $response) {
-    $response->header('Content-Type: text/plain');
-    return (string) $response->getData();
+    $response->header('Content-Type: application/json');
+    return json_encode($response->getData());
   }
 
 }

@@ -12,22 +12,23 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zeptech\rest;
+namespace zpt\rest;
 
 /**
- * This class encapsulates a response encoder for application/json media types.
+ * This class encapsulates a response encoder for binary data.
+ *
+ * NOTE: Unlike other encoders, this encoder will not set a Content-Type header.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class JsonEncoder implements ResponseEncoder {
+class BinaryEncoder implements ResponseEncoder {
 
   public function supports(AcceptType $type) {
-    return $type->matches('application/json');
+    return $type->matches('application/pdf');
   }
 
   public function encode(Response $response) {
-    $response->header('Content-Type: application/json');
-    return json_encode($response->getData());
+    return $response->getData();
   }
 
 }

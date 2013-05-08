@@ -12,7 +12,7 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zeptech\rest;
+namespace zpt\rest;
 
 /**
  * This class represents a media type specified in a request's "Accept: "

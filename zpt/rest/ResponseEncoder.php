@@ -12,7 +12,7 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zeptech\rest;
+namespace zpt\rest;
 
 /**
  * Interface for objects which encode a response for a specific media type and
