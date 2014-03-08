@@ -62,4 +62,8 @@ class UriTemplate {
     }
     return false;
   }
+
+  public function __toString() {
+    return $this->_tmpl;
+  }
 }
