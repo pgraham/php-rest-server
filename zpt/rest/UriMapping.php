@@ -53,4 +53,8 @@ class UriMapping {
     return $this->_template;
   }
 
+  public function __toString() {
+    return "$this->_method $this->_template";
+  }
+
 }
