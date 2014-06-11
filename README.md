@@ -1,13 +1,12 @@
 # PHP Rest Server
-This project provides support for creating RESTful web services.
+Request router for RESTful services.
 
 ## Quick Start
 
+Install with Composer (zeptech/php-rest-server).
+
 ```php
 <?php
-require 'SplClassLoader.php'; // See https://gist.github.com/221634
-$restLdr = new SplClassLoader('zeptech/rest', '/path/to/php-rest-server');
-$restLdr->register();
 
 try {
   $srvr = new \zeptech\rest\RestServer();
