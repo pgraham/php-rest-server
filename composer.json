@@ -12,8 +12,8 @@
 	}
     ],
     "autoload": {
-	"psr-0": {
-	    "zpt\\rest": ""
+	"psr-4": {
+	    "zpt\\rest\\": "src/"
 	}
     },
     "require": {
