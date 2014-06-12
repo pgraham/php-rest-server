@@ -10,29 +10,48 @@
 namespace zpt\rest;
 
 /**
- * This class encapsulates a URI template.
+ * This class encapsulates a URI template for a relative reference. URI should 
+ * be relative to the scheme and authority of the server for which routes are 
+ * being defined.
+ *
+ * ## Examples
+ *
+ *  -  /
+ *  -  /entity
+ *  -  /collection
+ *  -  /collection/{id}
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
 class UriTemplate {
 
-	private $_tmpl;
-	private $_matchRE;
-	private $_paramNames = array();
+	private $tmpl;
+	private $matchRegex;
+	private $paramNames = array();
 
+	/**
+	 * Create a new UriTemplate object. The specified UriTemplate should only 
+	 * contain the path portion of the URI and should not contain the
+	 * scheme://host:port portion of the URI.
+	 *
+	 * @param string $uriTemplate
+	 */
 	public function __construct($uriTemplate) {
-		$this->_tmpl = $uriTemplate;
+		$this->tmpl = $uriTemplate;
 
-		if ($this->_tmpl === '/') {
-			$this->_matchRE = '/^\/$/';
+		if ($this->tmpl === '/') {
+			$this->matchRegex = '/^\/$/';
 			return;
 		}
 
-		if(preg_match_all('/\/\{([^}]+)\}/', $this->_tmpl, $matches)) {
-			$this->_paramNames = $matches[1];
+		// Parse out the names of any expressions contained in the template
+		if(preg_match_all('/\/\{([^}]+)\}/', $this->tmpl, $matches)) {
+			$this->paramNames = $matches[1];
 		}
 
-		$tmplCmps = explode('/', ltrim($this->_tmpl, '/'));
+		// Build a regular expression used to match concrete URIs against the 
+		// template.
+		$tmplCmps = explode('/', ltrim($this->tmpl, '/'));
 		$escaped = array();
 		foreach ($tmplCmps as $cmp) {
 			if (preg_match('/\{.+\}/', $cmp)) {
@@ -41,19 +60,34 @@ class UriTemplate {
 				$escaped[] = preg_quote($cmp);
 			}
 		}
-
-		$this->_matchRE = "/^\/" . implode('\/', $escaped) . "$/";
+		$this->matchRegex = "/^\/" . implode('\/', $escaped) . "$/";
 	}
 
+	/**
+	 * Expand the template using the given set of values.
+	 *
+	 * TODO
+	 */
+	//public function expand(array $values) {}
+
+	/**
+	 * Determine if a given URI is an expansion of the encapsulated template.
+	 * If the template contains expressions, the expansion values of each 
+	 * expression in the given URI will be used to populate the given array.
+	 *
+	 * @param string $uri
+	 * @param &array $params
+	 */
 	public function matches($uri, &$params = false) {
 		if (!$params) {
 			$params = [];
 		}
-		if (preg_match($this->_matchRE, $uri, $matches)) {
+
+		if (preg_match($this->matchRegex, $uri, $matches)) {
 			array_shift($matches);
 
 			$params = array();
-			foreach ($this->_paramNames AS $idx => $param) {
+			foreach ($this->paramNames AS $idx => $param) {
 				$params[$param] = $matches[$idx];
 			}
 			return true;
