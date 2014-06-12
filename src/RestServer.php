@@ -14,12 +14,13 @@
  */
 namespace zpt\rest;
 
-use \Psr\Log\LoggerInterface;
-use \Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\NullLogger;
 // TODO Allow an explicit response type be set in the response so that the
 //      dependency to oboe can be removed.
-use \oboe\Page;
-use \Exception;
+use oboe\Page;
+use Exception;
 
 /**
  * This class encapsulates the process of handling a RESTful request for a
@@ -69,6 +70,8 @@ class RestServer /* implements LoggerAwareInterface */
             'zpt\rest\RestException',
             new RestExceptionHandler()
         );
+
+        $this->logger = new NullLogger();
     }
 
     /**
@@ -159,19 +162,20 @@ class RestServer /* implements LoggerAwareInterface */
             }
         }
 
-        
+
         if ($encoder === null) {
             // No supported type was found. According the HTTP/1.1 spec a
             // '406 Not Acceptable' header can be returned or:
             //
             //   "... HTTP/1.1 servers are allowed to return responses which are
             //    not acceptable according to the accept headers sent in the
-            //    request. In some cases, this may even be preferable to sending a
-            //    406 response. User agents are encouraged to inspect the headers of
-            //    an incoming response to determine if it is acceptable."
+            //    request. In some cases, this may even be preferable to sending
+            //    a 406 response. User agents are encouraged to inspect the
+            //    headers of an incoming response to determine if it is
+            //    acceptable."
             //
-            // So instead of returning a 406 Not Acceptable, a TextEncoder is used to
-            // return a text/plain response
+            // So instead of returning a 406 Not Acceptable, a TextEncoder is
+            // used to return a text/plain response.
             $encoder = new TextEncoder();
         }
         return $encoder->encode($this->response);
@@ -199,6 +203,8 @@ class RestServer /* implements LoggerAwareInterface */
      */
     public function handleRequest($action, $uri)
     {
+
+        $this->logger->info("ROUTER: $action $uri");
         try {
             if ($uri !== '/') {
                 $uri = rtrim($uri, '/');
@@ -210,10 +216,12 @@ class RestServer /* implements LoggerAwareInterface */
             $parameters = null;
             $mappingId = null;
             foreach ($this->mappings AS $mapping) {
+                $this->logger->debug("ROUTER: Attempting match - " . $mapping);
                 $matches = null;
                 if ($mapping->getTemplate()->matches($uri, $matches)) {
                     $mappingMethod = $mapping->getMethod();
                     if ($mappingMethod === null || $mappingMethod === $action) {
+                        $this->logger->info("ROUTER: Matches route $mapping");
                         $handler = $mapping->getHandler();
                         $parameters = $matches;
                         $mappingId = $mapping->getId();
@@ -226,6 +234,9 @@ class RestServer /* implements LoggerAwareInterface */
             if ($handler === null) {
                 throw new RestException(404);
             }
+
+            $this->logger->debug(
+                "ROUTER: Handler type - " . get_class($handler));
 
             $this->request = new Request($uri, $mappingId);
             $this->request->setAction($action);
@@ -255,26 +266,22 @@ class RestServer /* implements LoggerAwareInterface */
             }
 
         } catch (Exception $e) {
-              if ($this->logger !== null) {
-                $this->logger->err("Exception handling request.", array(
-                  'request' => $this->request,
-                  'exception' => $e
-                ));
-              }
-              error_log($e->getMessage());
-              error_log($e->getTraceAsString());
+            $this->logger->err("Exception handling request.", array(
+                'request' => $this->request,
+                'exception' => $e
+            ));
 
-              $type = get_class($e);
-              if (array_key_exists($type, $this->exceptionHandlers)) {
-                $handler = $this->exceptionHandlers[$type];
-              } else {
-                $handler = $this->defaultExceptionHandler;
-              }
+            $type = get_class($e);
+            if (array_key_exists($type, $this->exceptionHandlers)) {
+            $handler = $this->exceptionHandlers[$type];
+            } else {
+            $handler = $this->defaultExceptionHandler;
+            }
 
-              if (!$this->request) {
-                $this->request = new Request($uri);
-              }
-              $handler->handleException($e, $this->request, $this->response);
+            if (!$this->request) {
+            $this->request = new Request($uri);
+            }
+            $handler->handleException($e, $this->request, $this->response);
         }
     }
 

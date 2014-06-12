@@ -10,8 +10,8 @@
 namespace zpt\rest;
 
 /**
- * This class encapsulates a URI template for a relative reference. URI should 
- * be relative to the scheme and authority of the server for which routes are 
+ * This class encapsulates a URI template for a relative reference. URI should
+ * be relative to the scheme and authority of the server for which routes are
  * being defined.
  *
  * ## Examples
@@ -30,7 +30,7 @@ class UriTemplate {
 	private $paramNames = array();
 
 	/**
-	 * Create a new UriTemplate object. The specified UriTemplate should only 
+	 * Create a new UriTemplate object. The specified UriTemplate should only
 	 * contain the path portion of the URI and should not contain the
 	 * scheme://host:port portion of the URI.
 	 *
@@ -49,7 +49,7 @@ class UriTemplate {
 			$this->paramNames = $matches[1];
 		}
 
-		// Build a regular expression used to match concrete URIs against the 
+		// Build a regular expression used to match concrete URIs against the
 		// template.
 		$tmplCmps = explode('/', ltrim($this->tmpl, '/'));
 		$escaped = array();
@@ -72,7 +72,7 @@ class UriTemplate {
 
 	/**
 	 * Determine if a given URI is an expansion of the encapsulated template.
-	 * If the template contains expressions, the expansion values of each 
+	 * If the template contains expressions, the expansion values of each
 	 * expression in the given URI will be used to populate the given array.
 	 *
 	 * @param string $uri
@@ -93,5 +93,9 @@ class UriTemplate {
 			return true;
 		}
 		return false;
+	}
+
+	public function __toString() {
+		return $this->tmpl;
 	}
 }
