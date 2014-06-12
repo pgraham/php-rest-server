@@ -50,7 +50,10 @@ class UriTemplate {
     $this->_matchRE = "/^\/" . implode('\/', $escaped) . "$/";
   }
 
-  public function matches($uri, &$params) {
+  public function matches($uri, &$params = false) {
+    if (!$params) {
+      $params = [];
+    }
     if (preg_match($this->_matchRE, $uri, $matches)) {
       array_shift($matches);
 
