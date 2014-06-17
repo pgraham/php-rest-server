@@ -9,6 +9,8 @@
  */
 namespace zpt\rest;
 
+use Psr\HttpMessage\RequestInterface;
+use InvalidArgumentException;
 use StdClass;
 
 /**
@@ -16,17 +18,14 @@ use StdClass;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class Request {
+class Request extends HttpMessage implements RequestInterface
+{
 
 	/* The HTTP method of the request. */
-	private $action;
+	private $method;
 
 	/* Data sent with the request. */
 	private $data;
-
-	/* The id of the mapping that handles this request. */
-	// This is a code smell, this is the responsibility of the Router or RouteHandler
-	private $mappingId;
 
 	/* Values for any parameters specified in the mapping's URI template */
 	private $parameters;
@@ -37,18 +36,49 @@ class Request {
 	/* The requested URI */
 	private $url;
 
-	public function __construct($url, $mappingId = null) {
-		$this->url = $url;
-		$this->mappingId = $mappingId;
-	}
-
 	/**
 	 * Getter for the request's HTTP method.
 	 *
 	 * @return string
 	 */
-	public function getAction() {
-		return $this->action;
+	public function getMethod() {
+		return $this->method;
+	}
+
+	/**
+	 * Setter for the request's HTTP method.
+	 *
+	 * @param string $method
+	 */
+	public function setMethod($method) {
+		$this->method = $method;
+	}
+
+	/**
+	 * Getter for the request's URL.
+	 *
+	 * @return string
+	 */
+	public function getUrl() {
+		return $this->url;
+	}
+
+	/**
+	 * Setter for the request's URL.
+	 *
+	 * @param string $url
+	 */
+	public function setUrl($url) {
+		$urlInfo = parse_url($url, PHP_URL_SCHEME);
+		if (!in_array($urlInfo, [ 'http', 'https' ])) {
+			throw new InvalidArgumentException("URL is not HTTP: $url");
+		}
+
+		if (!filter_var($url, FILTER_VALIDATE_URL)) {
+			throw new InvalidArgumentException("Not a valid URL: $url");
+		}
+
+		$this->url = $url;
 	}
 
 	/**
@@ -67,15 +97,6 @@ class Request {
 			}
 		}
 		return $this->data;
-	}
-
-	/**
-	 * Getter for the mapping that is handling the request.
-	 *
-	 * @return string
-	 */
-	public function getMappingId() {
-		return $this->mappingId;
 	}
 
 	/**
@@ -122,15 +143,6 @@ class Request {
 	}
 
 	/**
-	 * Getter for the request's URI.
-	 *
-	 * @return string
-	 */
-	public function getUri() {
-		return $this->url;
-	}
-
-	/**
 	 * Indicate whether or not the specified data value is present in the
 	 * request.
 	 *
@@ -145,15 +157,6 @@ class Request {
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Setter for the request's HTTP method.
-	 *
-	 * @param string $action
-	 */
-	public function setAction($action) {
-		$this->action = $action;
 	}
 
 	/**
