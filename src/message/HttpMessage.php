@@ -7,7 +7,7 @@
  * information please view the LICENSE file that was distributed with this
  * source code.
  */
-namespace zpt\rest;
+namespace zpt\rest\messsage;
 
 use Psr\HttpMessage\MessageInterface;
 use Psr\HttpMessage\StreamInterface;
