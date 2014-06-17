@@ -14,7 +14,8 @@
  */
 namespace zpt\rest;
 
-use \Exception;
+use zpt\rest\message\Request;
+use Exception;
 
 /**
  * Interface for classes that transform a specific type of exception into a
