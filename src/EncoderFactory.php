@@ -14,6 +14,8 @@
  */
 namespace zpt\rest;
 
+use zpt\rest\message\Response;
+
 /**
  * This class encapsulates the collection of available encoders.
  * This class implements the Factory Method pattern.  The concrete factory is

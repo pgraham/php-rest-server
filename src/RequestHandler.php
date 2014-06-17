@@ -15,6 +15,7 @@
 namespace zpt\rest;
 
 use zpt\rest\message\Request;
+use zpt\rest\message\Response;
 
 /**
  * Interface for objects that handle a RESTful resource request.

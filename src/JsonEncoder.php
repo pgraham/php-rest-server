@@ -14,6 +14,8 @@
  */
 namespace zpt\rest;
 
+use zpt\rest\messsage\Response;
+
 /**
  * This class encapsulates a response encoder for application/json media types.
  *
