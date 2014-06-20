@@ -30,8 +30,8 @@ class RouteHandler {
 		return $this->uri;
 	}
 
-	public function invoke() {
+	public function invoke($req, $res) {
 		$fn = $this->handler;
-		$fn(null, null);
+		$fn($req, $res);
 	}
 }

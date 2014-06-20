@@ -62,6 +62,7 @@ class Router {
 	 */
 	public function process($method, $uri) {
 		$request = $this->getMessageBuilder()->getRequest();
+		$response = $this->getMessageBuilder()->getResponse();
 
 		if (!isset($this->handlers[$method])) {
 			return;
@@ -69,7 +70,7 @@ class Router {
 
 		foreach ($this->handlers[$method] as $handler) {
 			if ($handler->getUri()->matches($uri)) {
-				$handler->invoke();
+				$handler->invoke($request, $response);
 			}
 		}
 	}
