@@ -17,70 +17,88 @@ use zpt\rest\Router;
 
 class RouterTest extends TestCase {
 
+	private $app;
+	private $msgBldr;
+
+	protected function setUp() {
+		$this->app = new Router();
+		$this->msgBldr = $this->getMock('zpt\rest\message\MessageBuilder');
+
+		$this->app->setMessageBuilder($this->msgBldr);
+	}
+
 	public function testGetIndex() {
-		$app = new Router();
+		$this->msgBldr->expects($this->any())
+		              ->method('getRequest')
+		              ->will($this->returnValue(new Request('1.1')));
 
 		$processed = false;
-		$app->get('/', function ($req, $res) use (&$processed) {
+		$this->app->get('/', function ($req, $res) use (&$processed) {
 			$processed = true;
 		});
 
-		$app->process('GET', '/');
+		$this->app->process('GET', '/');
 
 		$this->assertTrue($processed);
 	}
 
 	public function testGetIndexMultipleRoutes() {
-		$app = new Router();
+		$this->msgBldr->expects($this->any())
+		              ->method('getRequest')
+		              ->will($this->returnValue(new Request('1.1')));
 
 		$processedIndex = false;
-		$app->get('/', function ($req, $res) use (&$processedIndex) {
+		$this->app->get('/', function ($req, $res) use (&$processedIndex) {
 			$processedIndex = true;
 		});
 
 		$processedHome = false;
-		$app->get('/home.html', function ($req, $res) use (&$processedHome) {
+		$this->app->get('/home.html', function ($req, $res) use (&$processedHome) {
 			$processedHome = true;
 		});
 
-		$app->process('GET', '/');
+		$this->app->process('GET', '/');
 
 		$this->assertTrue($processedIndex);
 		$this->assertFalse($processedHome);
 	}
 
 	public function testGetIndexMultipleMethods() {
-		$app = new Router();
+		$this->msgBldr->expects($this->any())
+		              ->method('getRequest')
+		              ->will($this->returnValue(new Request('1.1')));
 
 		$processedGet = false;
-		$app->get('/', function ($req, $res) use (&$processedGet) {
+		$this->app->get('/', function ($req, $res) use (&$processedGet) {
 			$processedGet = true;
 		});
 
 		$processedPost = false;
-		$app->post('/', function ($req, $res) use (&$processedPost) {
+		$this->app->post('/', function ($req, $res) use (&$processedPost) {
 			$processedPost = true;
 		});
 
-		$app->process('GET', '/');
+		$this->app->process('GET', '/');
 
 		$this->assertTrue($processedGet);
 		$this->assertFalse($processedPost);
 	}
 
 	public function testGetUriTemplate() {
-		$app = new Router();
+		$this->msgBldr->expects($this->any())
+		              ->method('getRequest')
+		              ->will($this->returnValue(new Request('1.1')));
 
 		$processedTimes = 0;
-		$app->get('/collection/{id}', function ($req, $res) use (&$processedTimes) {
+		$this->app->get('/collection/{id}', function ($req, $res) use (&$processedTimes) {
 			$processedTimes++;
 		});
 
 		for ($i = 0; $i < 10; $i++) {
-			$app->process('GET', "/collection/$i");
+			$this->app->process('GET', "/collection/$i");
 		}
 
-		$app->process('GET', '/collection');
+		$this->app->process('GET', '/collection');
 
 		$this->assertEquals(10, $processedTimes);
 	}

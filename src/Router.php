@@ -9,6 +9,8 @@
  */
 namespace zpt\rest;
 
+use zpt\rest\message\MessageBuilder;
+use zpt\rest\message\Request;
 use zpt\rest\router\RouteHandler;
 
 /**
@@ -24,6 +26,8 @@ class Router {
 		'PUT' => [],
 		'DELETE' => []
 	];
+
+	private $messageBuilder;
 
 	/**
 	 * Add a GET request handler for the specified URI template.
@@ -56,6 +60,8 @@ class Router {
 	 * @param string $uri
 	 */
 	public function process($method, $uri) {
+		$request = $this->getMessageBuilder()->getRequest();
+
 		if (!isset($this->handlers[$method])) {
 			return;
 		}
@@ -65,6 +71,33 @@ class Router {
 				$handler->invoke();
 			}
 		}
+	}
+
+	/*
+	 * ===========================================================================
+	 * Dependencies
+	 * ===========================================================================
+	 */
+
+	/**
+	 * Getter for the {@link MessageBuilder} used by Router. If not explictely
+	 * set, a {@link PhpEnvMessageBuilder} is used.
+	 *
+	 * @return MessageBuilder
+	 */
+	public function getMessageBuilder() {
+		return $this->messageBuilder;
+	}
+
+	/**
+	 * Setter for the {@link MessageBuilder} used by the Router to construct the 
+	 * {@link Request} and {@link Response} messages that are passed to the route 
+	 * handlers.
+	 *
+	 * @param MessageBuilder $messageBuilder
+	 */
+	public function setMessageBuilder(MessageBuilder $messageBuilder) {
+		$this->messageBuilder = $messageBuilder;
 	}
 
 }
