@@ -10,6 +10,7 @@
 namespace zpt\rest;
 
 use zpt\rest\message\MessageBuilder;
+use zpt\rest\message\PhpEnvMessageBuilder;
 use zpt\rest\message\Request;
 use zpt\rest\router\RouteHandler;
 
@@ -86,6 +87,9 @@ class Router {
 	 * @return MessageBuilder
 	 */
 	public function getMessageBuilder() {
+		if ($this->messageBuilder === null) {
+			$this->messageBuilder = new PhpEnvMessageBuilder();
+		}
 		return $this->messageBuilder;
 	}
 
