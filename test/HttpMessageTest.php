@@ -12,7 +12,7 @@ namespace zpt\rest\test;
 require_once __DIR__ . '/test-setup.php';
 
 use PHPUnit_Framework_TestCase as TestCase;
-use zpt\rest\HttpMessage;
+use zpt\rest\message\HttpMessage;
 
 class HttpMessageTest extends TestCase {
 

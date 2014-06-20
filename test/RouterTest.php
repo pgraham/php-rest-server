@@ -12,6 +12,7 @@ namespace zpt\rest\test;
 require_once __DIR__ . '/test-setup.php';
 
 use PHPUnit_Framework_TestCase as TestCase;
+use zpt\rest\message\Request;
 use zpt\rest\Router;
 
 class RouterTest extends TestCase {
