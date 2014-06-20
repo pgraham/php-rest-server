@@ -120,4 +120,21 @@ class RouterTest extends TestCase {
 		$this->app->process('GET', '/');
 	}
 
+	public function testResponsePassing() {
+		$mockResponse = $this->getMockBuilder('zpt\rest\message\Response')
+			->setConstructorArgs([ '1.1' ])
+			->getMock();
+
+		$this->msgBldr
+			->expects($this->any())
+			->method('getResponse')
+			->will($this->returnValue($mockResponse));
+
+		$this->app->get('/', function ($req, $res) use ($mockResponse) {
+			$this->assertEquals($mockResponse, $res);
+		});
+
+		$this->app->process('GET', '/');
+	}
+
 }

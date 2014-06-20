@@ -12,7 +12,7 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\rest;
+namespace zpt\rest\message;
 
 /**
  * This class encapsulates data about a response to a resource request.
