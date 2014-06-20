@@ -22,31 +22,28 @@ class PhpEnvMessageBuilder implements MessageBuilder
 {
 
 	private $protocolVersion;
-	private $method;
 	private $requestUrl;
-	private $headers;
-	private $body;
 
 	public function __construct() {
 		$this->protocolVersion = $this->parseProtocolVersion();
-		$this->method = $_SERVER['REQUEST_METHOD'];
 		$this->requestUrl = new RequestUrl();
-		$this->headers = new RequestHeaders();
-		$this->body = new RequestBodyInputStream();
 	}
 
 	public function getRequest() {
 		$request = new Request($this->protocolVersion);
-		$request->setMethod($this->method);
+		$request->setMethod($_SERVER['REQUEST_METHOD']);
 		$request->setUrl($this->requestUrl->get());
-		$request->setHeaders($this->headers->get());
-		$request->setBody($this->body);
+		$request->setHeaders((new RequestHeaders())->get());
+		$request->setBody(new RequestBodyInputStream());
 
 		return $request;
 	}
 
 	public function getResponse() {
-		// TODO Implement
+		$response = new Response($this->protocolVersion);
+		$request->setBody(new ResponseBodyOutputStream());
+
+		return $response;
 	}
 
 	/*

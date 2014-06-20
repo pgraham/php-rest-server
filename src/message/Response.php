@@ -1,18 +1,15 @@
 <?php
-/**
- * =============================================================================
- * Copyright (c) 2010, Philip Graham
+/*
+ * Copyright (c) 2014, Philip Graham
  * All rights reserved.
  *
- * This file is part of php-rest-server and is licensed by the Copyright holder
- * under the 3-clause BSD License. The full text of the license can be found in
- * the LICENSE.txt file included in the root directory of this distribution or
- * at the link below.
- * =============================================================================
- *
- * @license http://www.opensource.org/licenses/bsd-license.php
+ * This file is part of php-rest-server. For the full copyright and license
+ * information please view the LICENSE file that was distributed with this
+ * source code.
  */
 namespace zpt\rest\message;
+
+use Psr\HttpMessage\ResponseInterface;
 
 /**
  * This class encapsulates data about a response to a resource request.
@@ -21,86 +18,25 @@ namespace zpt\rest\message;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class Response {
+class Response extends HttpMessage implements ResponseInterface
+{
 
-	/* Data the comprises the request body. */
-	private $_data;
-
-	/* Headers to send with the response. */
-	private $_headers;
-
-	/* The type of content in the response */
-	private $_type;
+	private $status;
 
 	/**
 	 * Initialize a new Response object.
 	 */
-	public function __construct() {
-		$this->clearHeaders();
+	public function __construct($protocolVersion, $statusCode = '200') {
+		parent::__construct($protocolVersion);
+		$this->status = new HttpStatus($statusCode);
 	}
 
-	/**
-	 * Clear all response headers.
-	 */
-	public function clearHeaders() {
-		$this->_headers = array();
+	public function getStatusCode() {
+		return $this->status->getCode();
 	}
 
-	/**
-	 * Getter for the response's raw unencoded data.
-	 *
-	 * @return mixed
-	 */
-	public function getData() {
-		return $this->_data;
-	}
-
-	/**
-	 * Getter for the response's headers.
-	 *
-	 * @return string[]
-	 */
-	public function getHeaders() {
-		return $this->_headers;
-	}
-
-	/**
-	 * Getter for the type of data contained in the response.
-	 *
-	 * @return string
-	 */
-	public function getType() {
-		return $this->_type;
-	}
-
-	/**
-	 * Add a header to send with the response.
-	 *
-	 * @param string $header
-	 */
-	public function header($header) {
-		if (preg_match('/Content-Type\: (.+)/i', $header, $matches)) {
-			$this->setType($matches[1]);
-		}
-		$this->_headers[] = $header;
-	}
-
-	/**
-	 * Setter for the response's raw unencoded data.
-	 *
-	 * @param mixed $data
-	 */
-	public function setData($data = null) {
-		$this->_data = $data;
-	}
-
-	/**
-	 * Setter for the type of content in the response.
-	 *
-	 * @param string $type
-	 */
-	public function setType($type) {
-		$this->_type = $type;
+	public function getReasonPhrase() {
+		return $this->status->getReasonPhrase();
 	}
 
 }
