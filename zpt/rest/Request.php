@@ -29,6 +29,9 @@ class Request {
   /* Data sent with the request. */
   private $_data;
 
+  /* The site's document root. */
+  private $docRoot;
+
   /* The id of the mapping that handles this request. */
   private $_mappingId;
 
@@ -71,6 +74,15 @@ class Request {
       }
     }
     return $this->_data;
+  }
+
+  /**
+   * Getter the site's document root.
+   *
+   * @return string
+   */
+  public function getDocumentRoot() {
+    return $this->docRoot;
   }
 
   /**
@@ -168,6 +180,15 @@ class Request {
    */
   public function setData($data) {
     $this->_data = $data;
+  }
+
+  /**
+   * Setter for the site's document root.
+   *
+   * @param string $docRoot
+   */
+  public function setDocumentRoot($docRoot) {
+    $this->docRoot = $docRoot;
   }
 
   /**
