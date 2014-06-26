@@ -238,11 +238,12 @@ class RestServer /* implements LoggerAwareInterface */
             $this->logger->debug(
                 "ROUTER: Handler type - " . get_class($handler));
 
-            $this->request = new Request($uri, $mappingId);
-            $this->request->setAction($action);
-            if ($parameters !== null) {
-                $this->request->setParameters($parameters);
-            }
+            $this->request = $this->createRequest(
+                $uri,
+                $action,
+                $mappingId,
+                $parameters
+            );
 
             switch ($action) {
                 case 'DELETE':
@@ -354,6 +355,22 @@ class RestServer /* implements LoggerAwareInterface */
     public function setLogger(/*LoggerInterface*/ $logger)
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * Create the Request object passed to the selected URI handler.
+     *
+     * @param string $uri
+     * $param string $mappingId
+    */
+    protected function createRequest($uri, $action, $mappingId, $parameters) {
+        $request = new Request($uri, $mappingId);
+        $request->setAction($action);
+        $request->setDocumentRoot($_SERVER['DOCUMENT_ROOT']);
+        if ($parameters !== null) {
+            $request->setParameters($parameters);
+        }
+        return $request;
     }
 
     private function _decodeData($data)
