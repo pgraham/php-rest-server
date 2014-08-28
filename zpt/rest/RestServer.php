@@ -178,7 +178,16 @@ class RestServer /* implements LoggerAwareInterface */
             // used to return a text/plain response.
             $encoder = new TextEncoder();
         }
-        return $encoder->encode($this->response);
+        $this->logger->debug(
+            "[ROUTER] Encoding response {data} using " . get_class($encoder),
+            [ 'data' => $this->response->getData() ]
+        );
+        $response = $encoder->encode($this->response);
+        $this->logger->debug("[ROUTER] Encoded response: {response}", [
+            'response' => $response
+        ]);
+
+        return $response;
     }
 
     /**
@@ -204,7 +213,7 @@ class RestServer /* implements LoggerAwareInterface */
     public function handleRequest($action, $uri)
     {
 
-        $this->logger->info("ROUTER: $action $uri");
+        $this->logger->info("[ROUTER] $action $uri");
         try {
             if ($uri !== '/') {
                 $uri = rtrim($uri, '/');
@@ -221,7 +230,7 @@ class RestServer /* implements LoggerAwareInterface */
                 if ($mapping->getTemplate()->matches($uri, $matches)) {
                     $mappingMethod = $mapping->getMethod();
                     if ($mappingMethod === null || $mappingMethod === $action) {
-                        $this->logger->info("ROUTER: Matches route $mapping");
+                        $this->logger->debug("ROUTER: Matches route $mapping");
                         $handler = $mapping->getHandler();
                         $parameters = $matches;
                         $mappingId = $mapping->getId();
@@ -268,19 +277,19 @@ class RestServer /* implements LoggerAwareInterface */
 
         } catch (Exception $e) {
             $this->logger->err("Exception handling request.", array(
-                'request' => $this->request,
+                'request' => $this->request->getUri(),
                 'exception' => $e
             ));
 
             $type = get_class($e);
             if (array_key_exists($type, $this->exceptionHandlers)) {
-            $handler = $this->exceptionHandlers[$type];
+                $handler = $this->exceptionHandlers[$type];
             } else {
-            $handler = $this->defaultExceptionHandler;
+                $handler = $this->defaultExceptionHandler;
             }
 
             if (!$this->request) {
-            $this->request = new Request($uri);
+                $this->request = new Request($uri);
             }
             $handler->handleException($e, $this->request, $this->response);
         }

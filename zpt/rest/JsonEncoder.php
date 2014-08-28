@@ -27,7 +27,12 @@ class JsonEncoder implements ResponseEncoder {
 
   public function encode(Response $response) {
     $response->header('Content-Type: application/json');
-    return json_encode($response->getData());
+
+    $data = $response->getData();
+    if ($data instanceof \zpt\util\String) {
+      $data = (string) $data;
+    }
+    return json_encode($data);
   }
 
 }
