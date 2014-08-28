@@ -17,6 +17,8 @@ namespace zpt\rest;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\NullLogger;
+use zpt\rest\message\Request;
+use zpt\rest\message\Response;
 // TODO Allow an explicit response type be set in the response so that the
 //      dependency to oboe can be removed.
 use oboe\Page;

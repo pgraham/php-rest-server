@@ -14,7 +14,9 @@
  */
 namespace zpt\rest;
 
-use \Exception;
+use zpt\rest\message\Request;
+use zpt\rest\message\Response;
+use Exception;
 
 /**
  * REST server exception handler for RestExceptions.  Builds a 40X response

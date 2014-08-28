@@ -14,7 +14,9 @@
  */
 namespace zpt\rest;
 
-use \ReflectionClass;
+use zpt\rest\message\Request;
+use zpt\rest\message\Response;
+use ReflectionClass;
 
 /**
  * Base implementation of a RequestHandler.  Implements a handler for

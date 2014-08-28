@@ -14,25 +14,22 @@
  */
 namespace zpt\rest;
 
+use zpt\rest\message\Response;
+
 /**
- * This class encapsulates a response encoder for application/json media types.
+ * This class encapsulates a response encoder for text/* media types.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class JsonEncoder implements ResponseEncoder {
+class TextEncoder implements ResponseEncoder {
 
   public function supports(AcceptType $type) {
-    return $type->matches('application/json');
+    return $type->matches('text/*');
   }
 
   public function encode(Response $response) {
-    $response->header('Content-Type: application/json');
-
-    $data = $response->getData();
-    if ($data instanceof \zpt\util\String) {
-      $data = (string) $data;
-    }
-    return json_encode($data);
+    $response->header('Content-Type: text/plain');
+    return (string) $response->getData();
   }
 
 }

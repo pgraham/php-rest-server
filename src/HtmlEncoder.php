@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- * Copyright (c) 2013, Philip Graham
+ * Copyright (c) 2010, Philip Graham
  * All rights reserved.
  *
  * This file is part of php-rest-server and is licensed by the Copyright holder
@@ -14,25 +14,22 @@
  */
 namespace zpt\rest;
 
-use \Exception;
+use zpt\rest\message\Response;
 
 /**
- * Interface for classes that transform a specific type of exception into a
- * REST response.
+ * This class encapsulates a response encoder for text/html media types.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-interface ExceptionHandler
-{
+class HtmlEncoder implements ResponseEncoder {
 
-    /**
-     * Use the given Exception instance and request to data to populate a
-     * response object.
-     */
-    public function handleException(
-        Exception $e,
-        Request $request,
-        Response $response
-    );
+  public function supports(AcceptType $type) {
+    return $type->matches('text/html');
+  }
+
+  public function encode(Response $response) {
+    $response->header('Content-Type: text/html');
+    return (string) $response->getData();
+  }
 
 }

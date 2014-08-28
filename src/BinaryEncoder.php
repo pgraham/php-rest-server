@@ -14,6 +14,8 @@
  */
 namespace zpt\rest;
 
+use zpt\rest\message\Response;
+
 /**
  * This class encapsulates a response encoder for binary data.
  *

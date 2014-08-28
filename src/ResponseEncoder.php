@@ -14,6 +14,8 @@
  */
 namespace zpt\rest;
 
+use zpt\rest\message\Response;
+
 /**
  * Interface for objects which encode a response for a specific media type and
  * possibly a specific sub-type.

@@ -14,7 +14,9 @@
  */
 namespace zpt\rest;
 
-use \Exception;
+use zpt\rest\message\Request;
+use zpt\rest\message\Response;
+use Exception;
 
 /**
  * Default REST exception handler. Creates a 500 response.
