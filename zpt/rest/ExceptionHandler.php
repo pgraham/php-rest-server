@@ -26,13 +26,22 @@ interface ExceptionHandler
 {
 
     /**
+     * Indicate whether or not the handler can handle an exception of the given
+     * type.
+     *
+     * @param Exception $e
+     * @return boolean
+     */
+    public function handles(Exception $e);
+
+    /**
      * Use the given Exception instance and request to data to populate a
      * response object.
+     *
+     * Return a truthy value to indicate that the given
+     * exception has been handled. Anything else will cause subsequent exception
+     * handlers to be invoked.
      */
-    public function handleException(
-        Exception $e,
-        Request $request,
-        Response $response
-    );
+    public function handle(Exception $e, Request $request, Response $response);
 
 }

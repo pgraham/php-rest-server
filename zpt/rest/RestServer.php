@@ -66,10 +66,6 @@ class RestServer /* implements LoggerAwareInterface */
     public function __construct()
     {
         $this->defaultExceptionHandler = new DefaultExceptionHandler();
-        $this->registerExceptionHandler(
-            'zpt\rest\RestException',
-            new RestExceptionHandler()
-        );
 
         $this->logger = new NullLogger();
     }
@@ -281,17 +277,33 @@ class RestServer /* implements LoggerAwareInterface */
                 'exception' => $e
             ));
 
-            $type = get_class($e);
-            if (array_key_exists($type, $this->exceptionHandlers)) {
-                $handler = $this->exceptionHandlers[$type];
-            } else {
-                $handler = $this->defaultExceptionHandler;
-            }
-
             if (!$this->request) {
                 $this->request = new Request($uri);
             }
-            $handler->handleException($e, $this->request, $this->response);
+
+            $handled = false;
+            foreach ($this->exceptionHandlers as $handler) {
+                if ($handler->handles($e)) {
+                    $continue = $handler->handle(
+                        $e,
+                        $this->request,
+                        $this->response
+                    );
+
+                    if (!$continue) {
+                        $handled = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!$handled) {
+                $this->defaultExceptionHandler->handle(
+                    $e,
+                    $this->request,
+                    $this->response
+                );
+            }
         }
     }
 
@@ -301,9 +313,9 @@ class RestServer /* implements LoggerAwareInterface */
      * @param string $type
      * @param ExceptionHandler $handler
      */
-    public function registerExceptionHandler($type, ExceptionHandler $handler)
+    public function registerExceptionHandler(ExceptionHandler $handler)
     {
-        $this->exceptionHandlers[$type] = $handler;
+        $this->exceptionHandlers[] = $handler;
     }
 
     /**

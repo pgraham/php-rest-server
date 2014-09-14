@@ -24,11 +24,11 @@ use \Exception;
 class DefaultExceptionHandler implements ExceptionHandler
 {
 
-    public function handleException(
-        Exception $e,
-        Request $request,
-        Response $response
-    ) {
+    public function handles(Exception $e) {
+        return true;
+    }
+
+    public function handle(Exception $e, Request $request, Response $response) {
         
         $response->clearHeaders();
 
